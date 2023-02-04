@@ -2,20 +2,22 @@ const newQuoteButton = document.querySelector("button");
 const quotePara = document.querySelector(".quote");
 const authorPara = document.querySelector(".author");
 
-async function updateQuote() {
-  await fetch(
-    `https://api.quotable.io/random?maxLength=100&minLength=75&author="buddha"`,
-    {
-      method: "GET",
-    }
-  )
-    .then((response) => response.json())
-    .then((data) => {
-      quotePara.innerHTML = data.content;
-      authorPara.innerHTML = "- " + data.author;
-    });
+let quoteAPI = `https://api.quotable.io/quotes?maxLength=100&minLength=75`;
+let quotesList;
+let currentIndex = 0;
+async function fetchQuoteList() {
+  const responce = await fetch(quoteAPI);
+  const data = await responce.json();
+  quotesList = data.results;
+  updateQuote();
+}
+fetchQuoteList();
+
+function updateQuote() {
+  currentIndex = currentIndex == quotesList.length - 1 ? 0 : currentIndex + 1;
+  console.log(currentIndex);
+  quotePara.innerHTML = quotesList[currentIndex].content;
+  authorPara.innerHTML = quotesList[currentIndex].author;
 }
 
 newQuoteButton.addEventListener("click", updateQuote);
-
-updateQuote();
